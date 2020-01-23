@@ -1,0 +1,20 @@
+FROM ubuntu:16.04
+ENV HOME /home
+
+RUN apt-get update && apt-get install -y openssh-server \
+    bash 
+EXPOSE 22
+
+WORKDIR ${HOME}
+RUN mkdir /root/.ssh
+COPY ./id_rsa.pub /root/.ssh/id_rsa.pub
+RUN chmod 700 /root/.ssh/
+RUN chmod 700 /root/.ssh/id_rsa.pub
+RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+RUN chmod 700 /root/.ssh/authorized_keys
+
+RUN echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+RUN echo "UserKnownHostsFile /dev/null" >> /root/.ssh/config
+
+CMD service ssh start; sleep 20000000000000000
